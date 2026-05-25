@@ -1,5 +1,4 @@
 import type { DocumentModel, DocumentMetadata, GridData } from '../types/type';
-import { evaluateFormula, determineCellType } from '../utils/formuls';
 
 const STORAGE_KEY = 'spreadsheet_documents';
 
