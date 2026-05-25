@@ -68,14 +68,12 @@ const spreadsheetSlice = createSlice({
       state.hasUnsavedChanges = true;
     },
     addRow: (state, _action: PayloadAction<number>) => {
-      // Префикс _action убирает предупреждение об объявленной, но неиспользуемой переменной
       state.past.push(JSON.parse(JSON.stringify(state.cells)));
       state.future = [];
       state.rowsCount += 1;
       state.hasUnsavedChanges = true;
     },
     deleteRow: (state, action: PayloadAction<number>) => {
-      // ИСПРАВЛЕНО: Добавлен JSON.parse, чтобы в историю сохранялся объект GridData, а не string
       state.past.push(JSON.parse(JSON.stringify(state.cells)));
       state.future = [];
       const rowToDelete = action.payload;

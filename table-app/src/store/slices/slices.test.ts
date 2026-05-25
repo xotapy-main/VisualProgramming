@@ -5,7 +5,6 @@ import spreadsheetReducer, {
   undo, 
   redo 
 } from './spreadSheetSlice';
-// ИСПРАВЛЕНО: Добавлен импорт uiReducer для использования в тесте вместо uiSlice
 import uiReducer, { setSaveStatus } from './uiSlice';
 import authReducer, { logout } from './authSlice';
 
@@ -20,7 +19,6 @@ describe('Redux Slices Unit Tests', () => {
 
   test('uiSlice should handle setSaveStatus', () => {
     const initialState = { isCreateModalOpen: false, saveStatus: 'saved' as const, notification: null };
-    // ИСПРАВЛЕНО: Вместо неопределенного uiSlice теперь вызывается импортированный uiReducer
     const nextState = uiReducer(initialState, setSaveStatus('saving'));
     expect(nextState.saveStatus).toBe('saving');
   });

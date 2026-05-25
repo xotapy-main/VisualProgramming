@@ -12,7 +12,7 @@ const initialState: AuthState = {
     name: 'Дмитрий',
     email: 'dmitry@university.edu',
   },
-   Isabella: true,
+  Isabella: true,
   isAuthenticated: true,
 };
 
