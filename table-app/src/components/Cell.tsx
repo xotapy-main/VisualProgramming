@@ -5,7 +5,7 @@ export interface CellProps {
   id: CellId;
   data: CellData | undefined;
   isSelected: boolean;
-  onSelect: (id: CellId) => void;
+  onSelect: (id: CellId, event: React.MouseEvent) => void;
   onChange: (id: CellId, newValue: string) => void;
   width: number;
   height: number;
@@ -65,7 +65,7 @@ function Cell({ id, data, isSelected, onSelect, onChange, width, height }: CellP
   return (
     <div
       className={`cell ${isSelected ? 'selected' : ''}`}
-      onClick={() => onSelect(id)}
+      onClick={(e) => onSelect(id, e)}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
       tabIndex={0}

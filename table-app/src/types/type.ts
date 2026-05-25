@@ -27,3 +27,14 @@ export interface DocumentModel extends DocumentMetadata {
 }
 
 export type SaveStatus = 'saved' | 'saving' | 'error';
+
+export interface UserMock {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface SelectionRange {
+  start: CellId;
+  end: CellId;
+}
