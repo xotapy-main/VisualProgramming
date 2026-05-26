@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { GridData, CellId, SelectionRange } from '../../types/type';
+import type { GridData, CellId, SelectionRange} from '../../types/type';
 import { evaluateFormula, determineCellType } from '../../utils/formuls';
 
 interface SpreadsheetState {

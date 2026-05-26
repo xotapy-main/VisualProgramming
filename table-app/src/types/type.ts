@@ -1,6 +1,6 @@
 export type CellId = string;
 
-export type CellType = 'number' | 'formula' | 'boolean' | 'empty';
+export type CellType = 'number' | 'formula' | 'boolean' | 'empty' | 'text'; 
 
 export interface CellData {
   value: string;
@@ -8,8 +8,11 @@ export interface CellData {
   type: CellType;
 }
 
-export interface GridData {
-  [key: string]: CellData;
+export type GridData = Record<CellId, CellData>;
+
+export interface SelectionRange {
+  start: CellId;
+  end: CellId;
 }
 
 export interface DocumentMetadata {
@@ -24,6 +27,12 @@ export interface DocumentMetadata {
 
 export interface DocumentModel extends DocumentMetadata {
   cells: GridData;
+}
+
+export interface UserMock {
+  id: string;
+  name: string;
+  email: string;
 }
 
 export type SaveStatus = 'saved' | 'saving' | 'error';

@@ -1,51 +1,72 @@
-<<<<<<< HEAD
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { store } from './store/store';
 import AppLayout from './components/AppLayout';
-import ProtectedRoute from './components/ProtectedRoute';
 import DashboardPage from './pages/DashboardPage';
 import SpreadsheetPage from './pages/SpreadsheetPage';
 import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NonFoundPage';
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
-        <Route element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/documents/:documentId" element={<SpreadsheetPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Route>
-=======
-import React, { useState } from 'react';
-import Dashboard from './components/dashborad';
-import Spreadsheet from './components/table';
+const protectedLoader = () => {
+  const state = store.getState();
+  const isAuthenticated = state.auth.isAuthenticated;
+
+  if (!isAuthenticated) {
+    return Navigate({ to: '/login', replace: true });
+  }
+  
+  return null;
+};
+
+const publicLoader = () => {
+  const state = store.getState();
+  if (state.auth.isAuthenticated) {
+    return Navigate({ to: '/dashboard', replace: true });
+  }
+  return null;
+};
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <AppLayout />,
+    loader: protectedLoader, 
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" replace />,
+      },
+      {
+        path: 'dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: 'documents/:documentId',
+        element: <SpreadsheetPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+    ],
+  },
+  {
+    path: '/login',
+    loader: publicLoader,
+    element: (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'sans-serif' }}>
+        <h2>Пожалуйста, войдите в систему</h2>
+        <p>Страница авторизации (замени на свой LoginPage)</p>
+      </div>
+    ),
+  },
+  {
+    path: '*',
+    element: <Navigate to="/dashboard" replace />,
+  },
+]);
 
 function App() {
-  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
-
-  if (activeDocumentId) {
-    return (
-      <Spreadsheet 
-        documentId={activeDocumentId} 
-        onBackToDashboard={() => setActiveDocumentId(null)} 
-      />
-    );
-  }
-
-  return <Dashboard onSelectDocument={(id) => setActiveDocumentId(id)} />;
+  return <RouterProvider router={router} />;
 }
->>>>>>> parent of c7e336e (Проведен рефакторинг проекта на Redux реализованы slices и тесты для них)
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+export default App;

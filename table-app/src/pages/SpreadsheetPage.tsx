@@ -8,11 +8,10 @@ export default function SpreadsheetPage() {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  const currentDocument = useAppSelector((state) => state.currentDocument);
+  
+  const currentDocument = useAppSelector((state) => state.documents.currentDocument);
   const status = useAppSelector((state) => state.documents.status);
   const hasUnsavedChanges = useAppSelector((state) => state.spreadsheet.hasUnsavedChanges);
-
   const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
@@ -31,8 +30,8 @@ export default function SpreadsheetPage() {
     };
   }, [documentId, dispatch]);
 
-  useBlocker(({ currentValue, nextValue }) => {
-    if (hasUnsavedChanges && currentValue.pathname !== nextValue.pathname) {
+  useBlocker(({ currentLocation, nextLocation }) => {
+    if (hasUnsavedChanges && currentLocation.pathname !== nextLocation.pathname) {
       const confirmLeave = window.confirm('У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?');
       return !confirmLeave;
     }
@@ -45,7 +44,7 @@ export default function SpreadsheetPage() {
 
   if (isNotFound) {
     return (
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'sans-serif' }}>
         <h2>Документ не найден</h2>
         <p>Запрашиваемый документ с ID "{documentId}" не существует.</p>
         <button onClick={handleBack} style={{ padding: '10px 15px', cursor: 'pointer' }}>Вернуться на главную</button>
@@ -54,7 +53,7 @@ export default function SpreadsheetPage() {
   }
 
   if (status === 'loading' || !currentDocument) {
-    return <div style={{ padding: '20px' }}>Загрузка документа...</div>;
+    return <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>Загрузка документа...</div>;
   }
 
   return <Spreadsheet documentId={currentDocument.id} onBackToDashboard={handleBack} />;
