@@ -4,8 +4,7 @@ import {
   fetchDocuments, 
   createDocument, 
   deleteDocument, 
-  duplicateDocument,
-  fetchDocumentById 
+  duplicateDocument
 } from '../store/slices/documentSlice';
 import { setCreateModalOpen } from '../store/slices/uiSlice';
 
@@ -35,6 +34,7 @@ export default function Dashboard({ onSelectDocument }: DashboardProps) {
     if (createDocument.fulfilled.match(resultAction)) {
       dispatch(setCreateModalOpen(false));
       setNewTitle('');
+      onSelectDocument(resultAction.payload.id);
     }
   };
 
@@ -50,87 +50,63 @@ export default function Dashboard({ onSelectDocument }: DashboardProps) {
     dispatch(duplicateDocument(id));
   };
 
-  const handleSelectDoc = (id: string) => {
-    dispatch(fetchDocumentById(id));
-    onSelectDocument(id);
-  };
-
   return (
-    <div style={{ padding: '24px', fontFamily: 'sans-serif', color: '#333' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2>Мои документы</h2>
+    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2>Мои таблицы</h2>
         <button 
           onClick={() => dispatch(setCreateModalOpen(true))}
-          style={{ padding: '10px 16px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
+          style={{ padding: '10px 15px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
-          + Создать таблицу
+          Создать таблицу
         </button>
       </div>
 
-      {docs.length === 0 ? (
-        <p style={{ color: '#666' }}>У вас пока нет созданных документов. Нажмите кнопку выше, чтобы начать.</p>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-          {docs.map((doc) => (
-            <div 
-              key={doc.id} 
-              onClick={() => handleSelectDoc(doc.id)}
-              style={{ border: '1px solid #eaeaea', borderRadius: '8px', padding: '16px', cursor: 'pointer', backgroundColor: '#fff', transition: 'box-shadow 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'}
-            >
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.title}</h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', backgroundColor: '#ddd', border: '1px solid #ddd', borderRadius: '4px', margin: '12px 0', height: '60px' }}>
-                {doc.preview && doc.preview.map((row, rIdx) => 
-                  row.map((cellValue, cIdx) => (
-                    <div key={`${rIdx}-${cIdx}`} style={{ backgroundColor: '#fff', fontSize: '10px', padding: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#777' }}>
-                      {cellValue}
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <div style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>
-                Изменён: {new Date(doc.updatedAt).toLocaleDateString()}
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button 
-                  onClick={(e) => handleDuplicate(doc.id, e)}
-                  style={{ padding: '4px 8px', fontSize: '12px', backgroundColor: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                  Копия
-                </button>
-                <button 
-                  onClick={(e) => handleDelete(doc.id, doc.title, e)}
-                  style={{ padding: '4px 8px', fontSize: '12px', backgroundColor: '#fff5f5', color: '#ff4d4f', border: '1px solid #ffccc7', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                  Удалить
-                </button>
-              </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+        {docs.map((doc) => (
+          <div 
+            key={doc.id} 
+            onClick={() => onSelectDocument(doc.id)}
+            style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '15px', cursor: 'pointer', backgroundColor: '#f9f9f9', position: 'relative' }}
+          >
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px' }}>{doc.title}</h3>
+            <p style={{ margin: '0 0 5px 0', fontSize: '12px', color: '#666' }}>Строк: {doc.rowsCount}, Столбцов: {doc.colsCount}</p>
+            <p style={{ margin: '0 0 15px 0', fontSize: '11px', color: '#999' }}>Изменено: {new Date(doc.updatedAt).toLocaleString()}</p>
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={(e) => handleDuplicate(doc.id, e)}
+                style={{ padding: '5px 10px', fontSize: '12px', cursor: 'pointer' }}
+              >
+                Дублировать
+              </button>
+              <button 
+                onClick={(e) => handleDelete(doc.id, doc.title, e)}
+                style={{ padding: '5px 10px', fontSize: '12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                Удалить
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
       {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
-          <form onSubmit={handleCreate} style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px', width: '320px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-            <h3 style={{ margin: '0 0 16px 0' }}>Новый документ</h3>
-            
-            <label style={{ display: 'block', marginBottom: '12px', fontSize: '14px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <form onSubmit={handleCreate} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '300px' }}>
+            <h3 style={{ margin: '0 0 15px 0' }}>Создать новую таблицу</h3>
+            <label style={{ display: 'block', marginBottom: '10px', fontSize: '14px' }}>
               Название:
               <input 
                 type="text" 
-                required 
                 value={newTitle} 
                 onChange={e => setNewTitle(e.target.value)} 
+                required
                 style={{ width: '100%', padding: '8px', marginTop: '4px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} 
               />
             </label>
-
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+            
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
               <label style={{ flex: 1, fontSize: '14px' }}>
                 Строк:
                 <input 
@@ -157,7 +133,7 @@ export default function Dashboard({ onSelectDocument }: DashboardProps) {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button type="button" onClick={() => dispatch(setCreateModalOpen(false))} style={{ padding: '8px 12px', background: 'none', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}>Отмена</button>
-              <button type="submit" style={{ padding: '8px 12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Создать</button>
+              <button type="submit" style={{ padding: '8px 12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Создать</button>
             </div>
           </form>
         </div>

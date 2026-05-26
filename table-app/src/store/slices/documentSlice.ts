@@ -63,8 +63,15 @@ const documentsSlice = createSlice({
       .addCase(fetchDocuments.rejected, (state) => {
         state.status = 'failed';
       })
+      .addCase(fetchDocumentById.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(fetchDocumentById.fulfilled, (state, action: PayloadAction<DocumentModel | null>) => {
+        state.status = 'idle';
         state.currentDocument = action.payload;
+      })
+      .addCase(fetchDocumentById.rejected, (state) => {
+        state.status = 'failed';
       })
       .addCase(createDocument.fulfilled, (state, action: PayloadAction<DocumentModel>) => {
         state.list.push(action.payload);
